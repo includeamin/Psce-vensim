@@ -4,11 +4,13 @@ import matplotlib as plt
 import  pandas as pd
 
 from pcse.util import WOFOST71SiteDataProvider
-from pcse.base_classes import ParameterProvider
+#from pcse.base_classes import ParameterProvider
 from pcse.fileinput import YAMLAgroManagementReader
 from pcse.db import NASAPowerWeatherDataProvider
 from pcse.models import Wofost71_WLP_FD
 from pcse.fileinput import CABOFileReader
+from pcse.fileinput.cabo_weather import CABOWeatherDataProvider
+from pcse.base.parameter_providers import ParameterProvider
 
 cropd_dir = './Data/CROPD'
 soil_dir = './Data/SOILD'
@@ -35,11 +37,18 @@ def packTheParams(cropName,soilName,siteWav,siteCo2):
     print("packing all parameters...")
     return  parameters
 
+
 def agromanagementLoader(name):
     agromanagement_file = os.path.join(argo_dir, name)
     print("loading agromanagement...")
     agromanagement = YAMLAgroManagementReader(agromanagement_file)
     return agromanagement
+
+def custom_weather_provider():
+    wdp = CABOWeatherDataProvider(fname='NL2',fpath="./Data/METEO/CABOWE")
+    print(wdp.export())
+    print(wdp)
+    return wdp
 
 def dailyweatherobservations(lat,long):
 
@@ -94,5 +103,7 @@ def main():
     #pcse.test()
 
 if __name__ == '__main__':
-    main()
+    dailyweatherobservations(35,53)
+    custom_weather_provider()
+   # main()
 
