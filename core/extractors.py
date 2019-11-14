@@ -1,12 +1,37 @@
 from pcse.fileinput import CABOWeatherDataProvider
 import csv
+import os
+import pathlib
 
 
 class MeteoExtractor:
-    def __init__(self, path: str, f_name: str, coefficients: dict):
+    def __init__(self, path: str, f_name: str, coefficients: dict, crops, simulate_dir=''):
         self.Path: str = path
         self.FName: str = f_name
         self.Coefficients: dict = coefficients
+        self.Crops: list = crops
+        self.Dirs = {"Name": {"METEO": "path",
+                              "CROP": "path",
+                              "LookUp": "path"}}
+        self.SimulateDir = simulate_dir
+        self.init_dirs()
+
+    def init_dirs(self):
+        for region in self.Coefficients.keys():
+            if not os.path.exists(f'{self.SimulateDir}/{region}'):
+                pathlib.Path(f'{self.SimulateDir}/{region}').mkdir(parents=True, exist_ok=True)
+            for item in self.Crops:
+                if not os.path.exists(f'{self.SimulateDir}/{region}/{item}'):
+                    os.mkdir(f'{self.SimulateDir}/{region}/{item}')
+
+                if not os.path.exists(f'{self.SimulateDir}/{region}/{item}/METEO'):
+                    os.mkdir(f'{self.SimulateDir}/{region}/{item}/METEO')
+
+                if not os.path.exists(f'{self.SimulateDir}/{region}/{item}/CROP'):
+                    os.mkdir(f'{self.SimulateDir}/{region}/{item}/CROP')
+
+                if not os.path.exists(f'{self.SimulateDir}/{region}/{item}/LOOKUP'):
+                    os.mkdir(f'{self.SimulateDir}/{region}/{item}/LOOKUP')
 
     def get_weather_et0(self):
         weather_data = CABOWeatherDataProvider(self.FName, fpath=self.Path)
@@ -37,6 +62,7 @@ class MeteoExtractor:
             final_result[item] = temp
 
         return final_result
+
     def save_lookups(self):
         # obj = MeteoExtractor('../Data/METEO/CABOWE', "NL2", {"Apple": 1, "Apple2": 3, "Apple4": 4, "Apple5": 5,
         #                                                      "Orange1": 1, "Orange2": 2, "Orange3": 4, "Orange4": 5})
@@ -50,9 +76,11 @@ class MeteoExtractor:
 
 
 if __name__ == '__main__':
-    obj = MeteoExtractor('../Data/METEO/CABOWE', "NL2", {"Apple": 1, "Apple2": 3, "Apple4": 4, "Apple5": 5,
-                                                         "Orange1": 1, "Orange2": 2, "Orange3": 4, "Orange4": 5})
-    result = obj.save_lookups()
+    obj = MeteoExtractor('../Data/METEO/CABOWE', "NL2", {"Tajan": 1, "Sari": 3, "Amol": 4, "Tehran": 5,
+                                                         },
+                         ["Sib", "Khiar", "Berenj", 'Gandom', "Tare", "Sir", "Piaz", "Havij"],
+                         simulate_dir="./SimulateData")
+    # result = obj.save_lookups()
 
     # for item in result.keys():
     #     with open(f'./{item}.txt', 'w') as f:
