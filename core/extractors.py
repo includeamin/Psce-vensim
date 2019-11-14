@@ -14,7 +14,13 @@ class MeteoExtractor:
                               "CROP": "path",
                               "LookUp": "path"}}
         self.SimulateDir = simulate_dir
+        self.coefficients_validation()
         self.init_dirs()
+
+    def coefficients_validation(self):
+        for item in self.Coefficients.keys():
+            if len(self.Crops) != len(self.Coefficients[item].keys()):
+                raise Exception("Number of Coefficients should equal to number of Crops")
 
     def init_dirs(self):
         for region in self.Coefficients.keys():
@@ -76,8 +82,19 @@ class MeteoExtractor:
 
 
 if __name__ == '__main__':
-    obj = MeteoExtractor('../Data/METEO/CABOWE', "NL2", {"Tajan": 1, "Sari": 3, "Amol": 4, "Tehran": 5,
-                                                         },
+    obj = MeteoExtractor('../Data/METEO/CABOWE', "NL2",
+    {"Tajan": {
+        "Sib": 1, "Khiar": 2, "Berenj": 3, 'Gandom': 3, "Tare": 5, "Sir": 6, "Piaz": 5, "Havij": 5
+    }, "Sari": {
+        "Sib": 1, "Khiar": 2, "Berenj": 3, 'Gandom': 3, "Tare": 5, "Sir": 6, "Piaz": 5, "Havij": 5
+
+    }, "Amol": {
+        "Sib": 1, "Khiar": 2, "Berenj": 3, 'Gandom': 3, "Tare": 5, "Sir": 6, "Piaz": 5, "Havij": 5
+
+    }, "Tehran": {
+        "Sib": 1, "Khiar": 2, "Berenj": 3, 'Gandom': 3, "Tare": 5, "Sir": 6, "Piaz": 5, "Havij": 5
+    }
+    },
                          ["Sib", "Khiar", "Berenj", 'Gandom', "Tare", "Sir", "Piaz", "Havij"],
                          simulate_dir="./SimulateData")
     # result = obj.save_lookups()
